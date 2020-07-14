@@ -53,7 +53,7 @@ class NiftiGenerator:
         ## help='Perform random translations by up to this number of pixels'
         self.augOptions.translations = 0
 
-    def generate(self, img_size=(256,256), slice_samples=1, batch_size=16 ):
+    def generate(self, img_size=(256,256), slice_samples=1, batch_size=16, ct=False ):
     
         while True:
           
@@ -94,6 +94,12 @@ class NiftiGenerator:
                   # augmentation would happen here
                   # TODO Augmentation needs to validated
                   imgSlices = self.augment( imgSlices )
+                
+                  # Normalization
+                  if ct:
+                    imgSlices = (imgSlices + 1000) / 2500
+                  elif not ct:
+                    imgSlices = (imgSlices - np.mean(imgSlices)) / np.std(imgSlices)
               
                   # put into data array for batch of samples
                   batch_X[i,:,:,:] = imgSlices
